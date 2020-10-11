@@ -51,9 +51,9 @@ class SQLiteCreateTable
         $commands = ['CREATE TABLE IF NOT EXISTS program (
                         program_id   INTEGER PRIMARY KEY,
                         channel_name TEXT NOT NULL,
-                        program_start_date DATE,
+                        program_start_date TEXT,
                         program_title TEXT NOT NULL,
-                        program_description TEXT NOT NULL,
+                        program_description TEXT,
                         program_age_restriction TEXT
                       )'];
 
@@ -64,20 +64,37 @@ class SQLiteCreateTable
     }
 
     /**
+     * Insert a new task into the tasks table
+     */
+    public function insertProgram($programs)
+    {
+        $sth = $this->pdo->prepare("DELETE FROM program");
+        $sth->execute();
+
+        foreach ($programs as $program) {
+
+            $sql = "INSERT INTO program ( " . implode(', ', array_keys($program)) . ") VALUES (" . implode(', ', array_values($program)) . ");";
+            $sth = $this->pdo->prepare($sql);
+            $sth->execute();
+        }
+    }
+
+    /**
      * get the table list in the database
      */
     public function getTableList()
     {
 
-        $stmt = $this->pdo->query("SELECT name
-                                   FROM sqlite_master
-                                   WHERE type = 'table'
-                                   ORDER BY name");
-        $tables = [];
+        $stmt = $this->pdo->query("SELECT *
+                                   FROM program
+                                   ");
+        $result = "<tbody>";
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $tables[] = $row['name'];
-        }
 
-        return $tables;
+            $result .= "<tr><td>" . $row['channel_name'] . "</td><td>" . $row['program_start_date'] . "</td><td>" . $row['program_title'] . "</td><td>" . $row['program_description'] . "</td></tr>";
+        }
+        $result .= "</tbody>";
+
+        return $result;
     }
 }

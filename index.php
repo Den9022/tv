@@ -4,23 +4,32 @@ require 'vendor/autoload.php';
 
 use App\SQLiteConnection as SQLiteConnection;
 use App\SQLiteCreateTable as SQLiteCreateTable;
+use App\ExtractProgramData as ExtractProgramData;
 
 try {
 
     $pdo = (new SQLiteConnection())->connect();
 
     $sqlite = new SQLiteCreateTable($pdo);
-    // create new tables
+    // create new table
     $sqlite->createTables();
-    // get the table list
-    $tables = $sqlite->getTableList();
+
+    // get the data from the website
+    $extractor = new ExtractProgramData;
+    $extractor->extractData();
+
+    $sqlite->insertProgram($extractor->getExtractedPrograms());
+
+    // get the list
+    $result = $sqlite->getTableList();
 } catch (PDOException $e) {
     echo $e->getMessage();
 }
+
 ?>
 
-
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -41,17 +50,14 @@ try {
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Tables</th>
+                    <th>Csatora</th>
+                    <th>Időpont</th>
+                    <th>Cím</th>
+                    <th>Leírás</th>
                 </tr>
             </thead>
-            <tbody>
-                <?php foreach ($tables as $table) : ?>
-                    <tr>
 
-                        <td><?php echo $table ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
+            <?php echo $result ?>
         </table>
     </div>
 </body>

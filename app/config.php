@@ -2,11 +2,11 @@
 
 namespace App;
 
-class Config {
+class Config
+{
 
-   /**
-    * path to the sqlite file
-    */
+    /**
+     * path to the sqlite file
+     */
     const PATH_TO_SQLITE_FILE = 'db/tv.db';
-
 }

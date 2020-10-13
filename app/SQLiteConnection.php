@@ -82,12 +82,23 @@ class SQLiteCreateTable
     /**
      * get the table list in the database
      */
-    public function getTableList()
+    public function getTableList($channel = null)
     {
 
-        $stmt = $this->pdo->query("SELECT *
-                                   FROM program
-                                   ");
+        if ($channel != null) {
+            $stmt = $this->pdo->prepare('SELECT *       
+            FROM program
+            WHERE channel_name = :channel;');
+
+            $stmt->execute([':channel' => $channel]);
+        } else {
+            $stmt = $this->pdo->prepare('SELECT *       
+            FROM program
+            ;');
+
+            $stmt->execute();
+        }
+
         $result = "<tbody>";
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
 
@@ -96,5 +107,20 @@ class SQLiteCreateTable
         $result .= "</tbody>";
 
         return $result;
+    }
+
+    public function getChannels()
+    {
+
+        $stmt = $this->pdo->query("SELECT channel_name
+            FROM program
+            ");
+
+        $channels = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+
+            $channels[] = $row;
+        }
+        return $channels;
     }
 }

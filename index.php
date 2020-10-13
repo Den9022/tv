@@ -18,10 +18,18 @@ try {
     $extractor = new ExtractProgramData;
     $extractor->extractData();
 
-    $sqlite->insertProgram($extractor->getExtractedPrograms());
+    if (!empty($_GET['channel'])) {
+        $channel = $_GET['channel'];
+    } else {
+        $channel = null;
+    }
 
+    $sqlite->insertProgram($extractor->getExtractedPrograms());
     // get the list
-    $result = $sqlite->getTableList();
+    $result = $sqlite->getTableList($channel);
+
+    //get channels
+    $channels = $sqlite->getChannels();
 } catch (PDOException $e) {
     echo $e->getMessage();
 }
@@ -45,6 +53,9 @@ try {
     <div class="container">
         <div class="page-header">
             <h1>Tv Műsor</h1>
+            <?php foreach ($channels as $channel) : ?>
+                <p><a href="/tv/?channel=<?= $channel['channel_name'] ?>"> <?= $channel['channel_name'] ?> </a> </p>
+            <?php endforeach; ?>
         </div>
 
         <table class="table table-bordered">

@@ -24,7 +24,7 @@ try {
         $channel = null;
     }
 
-    $sqlite->insertProgram($extractor->getExtractedPrograms());
+    $sqlite->insertProgram($extractor->getExtractedPrograms(5));
     // get the list
     $result = $sqlite->getTableList($channel);
 
